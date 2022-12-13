@@ -16,3 +16,35 @@ img {
   display: block;
   max-width: 100%;
 }
+
+.swiper-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10 auto;
+  background-color: rgb(151, 146, 146);
+  height: 50px;
+  width: 70px;
+  border-radius: 10%;
+}
+
+.timer {
+  margin-top: 10px;
+  display: flex;
+  width: 100px;
+  height: 50px;
+  gap: 10px;
+}
+
+.field {
+  align-items: center;
+  text-align: center;
+}
+
+.value {
+  font-size: 30;
+}
+
+.label {
+  font-style: italic;
+}
