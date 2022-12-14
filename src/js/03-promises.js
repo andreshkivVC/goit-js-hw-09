@@ -1,45 +1,53 @@
-import Notiflix from 'notiflix';
+import { Notify } from 'notiflix';
 
-const refs = { form: document.querySelector('.form') };
+const refs = {
+  formInputEl: document.querySelector('.form'),
+};
 
-function createPromise(position, delay) {
-  const promise = new Promise((resolve, reject) => {
-    const shouldResolve = Math.random() > 0.3;
-    if (shouldResolve) {
-      resolve({ position, delay });
-    }
-    reject({ position, delay });
-  });
-  promise
-    .then(({ position, delay }) => {
-      Notiflix.Notify.success(
-        `:white_tick: Fulfilled promise ${position} in ${delay}ms`
-      );
-    })
-    .catch(({ position, delay }) => {
-      Notiflix.Notify.failure(`:x: Rejected promise ${position} in ${delay}ms`);
-    });
+let timeId = null;
+
+refs.formInputEl.addEventListener('submit', onFormSubmit);
+
+/** functions */
+
+function onFormSubmit(evt) {
+  evt.preventDefault();
+  clearTimeout(timeId);
+
+  const { delay, step, amount } = evt.target.elements;
+  let stepValue = Number(delay.value);
+
+  if (delay.value < 1 || step.value < 1 || amount.value < 1) {
+    Notify.failure(`All fields must be more than zero`);
+    return;
+  }
+
+  Notify.success('Please observe the promises appear below');
+
+  for (let i = 1; i <= amount.value; i += 1) {
+    createPromise(i, stepValue)
+      .then(({ position, delay }) => {
+        Notify.success(`Fulfilled promise #${position} in ${delay}ms`);
+      })
+      .catch(({ position, delay }) => {
+        Notify.failure(`Rejected promise #${position} in ${delay}ms`);
+      });
+    stepValue += Number(step.value);
+  }
+
+  evt.currentTarget.reset();
 }
 
-refs.form.addEventListener('submit', onFormSubmit);
+function createPromise(position, delay) {
+  const shouldResolve = Math.random() > 0.3;
 
-function onFormSubmit(e) {
-  e.preventDefault();
-  const formElements = e.currentTarget.elements;
-  const delay = Number(formElements.delay.value);
-  const step = Number(formElements.step.value);
-  const amount = Number(formElements.amount.value);
-  let currentAmount = 0;
-  let currentDelay = delay;
-  setTimeout(() => {
-    createPromise(currentAmount, currentDelay);
-    const interval = setInterval(() => {
-      currentAmount += 1;
-      currentDelay += step;
-      if (currentAmount === amount) {
-        clearInterval(interval);
+  return new Promise((resolve, reject) => {
+    timeId = setTimeout(() => {
+      if (shouldResolve) {
+        resolve({ position, delay });
+      } else {
+        reject({ position, delay });
       }
-      createPromise(currentAmount, currentDelay);
-    }, step);
-  }, delay);
+    }, delay);
+  });
 }

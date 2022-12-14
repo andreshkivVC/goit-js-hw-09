@@ -60,18 +60,23 @@ function onInputDate(selectedDates) {
 
 function onStartedTimer(selectedDates) {
   startBtnRef.addEventListener('click', () => {
-    if (timeId) {
-      clearInterval(timeId);
-      timeId = null;
-      return;
-    }
     timeId = setInterval(() => {
       const timerValueInMs = Date.parse(selectedDates) - Date.now();
+      if (timerValueInMs <= 0) {
+        clearInterval(timeId);
+        return;
+      }
       const objTimerValue = convertMs(timerValueInMs);
-      timerDayRef.textContent = objTimerValue.days ? objTimerValue.days : '00';
-      timerHourRef.textContent = objTimerValue.hours;
-      timerMinRef.textContent = objTimerValue.minutes;
-      timerSecRef.textContent = objTimerValue.seconds;
+      timerDayRef.textContent = objTimerValue.days.toString().padStart(2, '0');
+      timerHourRef.textContent = objTimerValue.hours
+        .toString()
+        .padStart(2, '0');
+      timerMinRef.textContent = objTimerValue.minutes
+        .toString()
+        .padStart(2, '0');
+      timerSecRef.textContent = objTimerValue.seconds
+        .toString()
+        .padStart(2, '0');
     }, INTERVAL);
   });
 }
